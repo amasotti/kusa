@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file (created with git cliff).
 
+## [0.1.3] - 2026-02-19
+
+[Compare with last version](https://github.com/amasotti/kusa/compare/19b8d910e7f8ec9d23860b9e099be5ec7cd317f7..b6c9d9cf2b0b0eed5fa98313f466514b0d60c0cf)
+### 🚀 Features
+
+- Add deployments command to list workloads by CPU over-request factor ([b6c9d9c](https://github.com/amasotti/kusa/commit/b6c9d9cf2b0b0eed5fa98313f466514b0d60c0cf)) - by _Antonio Masotti_
+
 ## [0.1.2] - 2026-02-19
 
 [Compare with last version](https://github.com/amasotti/kusa/compare/f3de1db611dbe4645ed90b9e30347250f07162a0..19b8d910e7f8ec9d23860b9e099be5ec7cd317f7)
