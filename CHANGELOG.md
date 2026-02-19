@@ -4,10 +4,16 @@ All notable changes to this project will be documented in this file (created wit
 
 ## [0.1.2] - 2026-02-19
 
-[Compare with last version](https://github.com/amasotti/kusa/compare/f3de1db611dbe4645ed90b9e30347250f07162a0..bbd1a79005d372c68dc6584b84022cf95acbd814)
+[Compare with last version](https://github.com/amasotti/kusa/compare/f3de1db611dbe4645ed90b9e30347250f07162a0..19b8d910e7f8ec9d23860b9e099be5ec7cd317f7)
 ### 🐛 Bug Fixes
 
 - Copy & paste issue ([bbd1a79](https://github.com/amasotti/kusa/commit/bbd1a79005d372c68dc6584b84022cf95acbd814)) - by _Antonio Masotti_
+
+- Update build command to simplify binary output path ([19b8d91](https://github.com/amasotti/kusa/commit/19b8d910e7f8ec9d23860b9e099be5ec7cd317f7)) - by _Antonio Masotti_
+
+### ⚙️ Miscellaneous Tasks
+
+- Add release notes generation step to workflow ([de50523](https://github.com/amasotti/kusa/commit/de505231b12e62a890d55dc0f5c45192d6fda405)) - by _Antonio Masotti_
 
 ## [0.1.1] - 2026-02-19
 
