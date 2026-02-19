@@ -12,6 +12,11 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
+var noColor bool
+
+// SetNoColor disables ANSI color codes in console output.
+func SetNoColor(v bool) { noColor = v }
+
 // cellValue holds a text value and optional ANSI colors for console rendering.
 type cellValue struct {
 	text   string
@@ -36,7 +41,7 @@ func renderTable(title string, headers []string, rows [][]cellValue) string {
 	for _, row := range rows {
 		r := make(table.Row, len(row))
 		for i, cell := range row {
-			if len(cell.colors) > 0 {
+			if !noColor && len(cell.colors) > 0 {
 				r[i] = cell.colors.Sprint(cell.text)
 			} else {
 				r[i] = cell.text

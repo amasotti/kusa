@@ -32,19 +32,19 @@ jobs:
         GOOS: ${{ matrix.goos }}
         GOARCH: ${{ matrix.goarch }}
       run: |
-        BINARY_NAME=ui-elf
+        BINARY_NAME=kusa
         if [ "${{ matrix.goos }}" = "windows" ]; then
-          BINARY_NAME=ui-elf.exe
+          BINARY_NAME=kusa.exe
         fi
         mkdir -p dist
-        go build -o dist/${BINARY_NAME} cmd/ui-elf/main.go
+        go build -o dist/${BINARY_NAME} cmd/kusa/main.go
         
         # Package the binary
         cd dist
         if [ "${{ matrix.goos }}" = "windows" ]; then
-          zip ui-elf-${{ matrix.goos }}-${{ matrix.goarch }}.zip ${BINARY_NAME}
+          zip kusa-${{ matrix.goos }}-${{ matrix.goarch }}.zip ${BINARY_NAME}
         else
-          tar -czvf ui-elf-${{ matrix.goos }}-${{ matrix.goarch }}.tar.gz ${BINARY_NAME}
+          tar -czvf kusa-${{ matrix.goos }}-${{ matrix.goarch }}.tar.gz ${BINARY_NAME}
         fi
 
     - name: Release
