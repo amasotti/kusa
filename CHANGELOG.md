@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file (created with git cliff).
 
+## [0.1.1] - 2026-02-19
+
+[Compare with last version](https://github.com/amasotti/kusa/compare/32dbd42bd29b0778e9417f15192c7f9bf8370128..f3de1db611dbe4645ed90b9e30347250f07162a0)
+### 🚀 Features
+
+- Add markdown rendering for nodes and pods with output saving ([f3de1db](https://github.com/amasotti/kusa/commit/f3de1db611dbe4645ed90b9e30347250f07162a0)) - by _Antonio Masotti_
+
+### 🐛 Bug Fixes
+
+- Update module path to reflect new GitHub repository structure ([599e85b](https://github.com/amasotti/kusa/commit/599e85bcc3d2782c3d88054a1df72e3663a329d1)) - by _Antonio Masotti_
+
+### 🧪 Testing
+
+- Add unit tests for resource quantity formatting and verdict analysis ([e69ce66](https://github.com/amasotti/kusa/commit/e69ce663169d0afb5f43e84b81100f2b565bdc83)) - by _Antonio Masotti_
+
+### ⚙️ Miscellaneous Tasks
+
+- Add badges ([fc669f0](https://github.com/amasotti/kusa/commit/fc669f0dde6e780670a98e6c2dcd0704bab5e20f)) - by _Antonio Masotti_
+
+- Improve docs ([e6153fe](https://github.com/amasotti/kusa/commit/e6153feb186b8d5a27b2ffc97c805bd8c657beec)) - by _Antonio Masotti_
+
 ## [0.1.0] - 2026-02-19
 
 ### 🚀 Features
