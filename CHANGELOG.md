@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file (created with git cliff).
 
+## [0.1.5] - 2026-02-19
+
+[Compare with last version](https://github.com/amasotti/kusa/compare/845b39ab65561eea5d2d8d4f1e31f842c7ec89b5..ce52254c986c9d1b066ee2084df284b791dec1fd)
+### 🚀 Features
+
+- Add verdict calculations for CPU and memory usage in deployments and pods ([e2ac7bf](https://github.com/amasotti/kusa/commit/e2ac7bf5674eb1549195e16093978d290143ae64)) - by _Antonio Masotti_
+
+- Add min-factor filtering for CPU requests in deployments and pods ([ce52254](https://github.com/amasotti/kusa/commit/ce52254c986c9d1b066ee2084df284b791dec1fd)) - by _Antonio Masotti_
+
 ## [0.1.4] - 2026-02-19
 
 [Compare with last version](https://github.com/amasotti/kusa/compare/b6c9d9cf2b0b0eed5fa98313f466514b0d60c0cf..845b39ab65561eea5d2d8d4f1e31f842c7ec89b5)
