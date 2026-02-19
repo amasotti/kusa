@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file (created with git cliff).
 
+## [0.1.4] - 2026-02-19
+
+[Compare with last version](https://github.com/amasotti/kusa/compare/b6c9d9cf2b0b0eed5fa98313f466514b0d60c0cf..845b39ab65561eea5d2d8d4f1e31f842c7ec89b5)
+### 🚀 Features
+
+- Add namespace filtering to pods and deployments commands ([845b39a](https://github.com/amasotti/kusa/commit/845b39ab65561eea5d2d8d4f1e31f842c7ec89b5)) - by _Antonio Masotti_
+
 ## [0.1.3] - 2026-02-19
 
 [Compare with last version](https://github.com/amasotti/kusa/compare/19b8d910e7f8ec9d23860b9e099be5ec7cd317f7..b6c9d9cf2b0b0eed5fa98313f466514b0d60c0cf)
