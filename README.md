@@ -1,6 +1,7 @@
 # kusa — Kubernetes Usage Analyzer
 
 [![Go Version](https://img.shields.io/badge/go-1.26+-00ADD8?logo=go)](https://go.dev/)
+[![Test and Lint](https://github.com/amasotti/kusa/actions/workflows/test-lint.yml/badge.svg?branch=main)](https://github.com/amasotti/kusa/actions/workflows/test-lint.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![GitHub release](https://img.shields.io/github/v/release/amasotti/kusa)](https://github.com/amasotti/kusa/releases)
 
