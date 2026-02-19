@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file (created with git cliff).
 
+## [0.1.2] - 2026-02-19
+
+[Compare with last version](https://github.com/amasotti/kusa/compare/f3de1db611dbe4645ed90b9e30347250f07162a0..bbd1a79005d372c68dc6584b84022cf95acbd814)
+### 🐛 Bug Fixes
+
+- Copy & paste issue ([bbd1a79](https://github.com/amasotti/kusa/commit/bbd1a79005d372c68dc6584b84022cf95acbd814)) - by _Antonio Masotti_
+
 ## [0.1.1] - 2026-02-19
 
 [Compare with last version](https://github.com/amasotti/kusa/compare/32dbd42bd29b0778e9417f15192c7f9bf8370128..f3de1db611dbe4645ed90b9e30347250f07162a0)
