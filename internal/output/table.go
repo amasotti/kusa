@@ -83,6 +83,20 @@ func naCell() cellValue {
 	return cvColored("N/A", text.Colors{text.Faint})
 }
 
+// verdictFromRatio computes a verdict by treating req as 100% and expressing actual as
+// a percentage of it. This makes ResourceVerdict reusable for pods and workloads where
+// there is no node-level allocatable capacity to normalise against.
+func verdictFromRatio(req, actual float64, metricsAvail bool) cellValue {
+	if req == 0 {
+		return cvColored("no req", text.Colors{text.Faint})
+	}
+	if !metricsAvail {
+		return naCell()
+	}
+	v := analysis.ResourceVerdict(100, actual/req*100)
+	return cvColored(v.Label, text.Colors{v.Color})
+}
+
 // RenderNodes renders the nodes table to stdout and saves markdown files.
 func RenderNodes(result *kube.FetchNodesResult, contextName string, includeSystem bool, podOverview bool) {
 	ts := time.Now()
@@ -241,15 +255,16 @@ func RenderDeployments(result *kube.FetchWorkloadsResult, contextName string, li
 	}
 
 	title := fmt.Sprintf("Deployments — %s", contextName)
-	headers := []string{"#", "Kind", "Namespace", "Workload", "Pods", "CPU Req", "CPU Actual", "Over-req", "Mem Req", "Mem Actual"}
+	headers := []string{"#", "Kind", "Namespace", "Workload", "Pods", "CPU Req", "CPU Actual", "Over-req", "CPU Verdict", "Mem Req", "Mem Actual", "Mem Verdict"}
 
 	var rows [][]cellValue
 	for i, w := range workloads {
 		factorStr := kube.FormatFactor(w.CPURequest, w.CPUActual)
 		factorColors := analysis.FactorColors(w.CPURequest, w.CPUActual)
 
+		metricsAvail := result.MetricsAvailable && w.MetricsAvailable
 		var cpuActualCell, memActualCell cellValue
-		if result.MetricsAvailable && w.MetricsAvailable {
+		if metricsAvail {
 			cpuActualCell = cv(kube.FormatCPU(w.CPUActual))
 			memActualCell = cv(kube.FormatMem(w.MemActual))
 		} else {
@@ -266,8 +281,10 @@ func RenderDeployments(result *kube.FetchWorkloadsResult, contextName string, li
 			cv(kube.FormatCPU(w.CPURequest)),
 			cpuActualCell,
 			cvColored(factorStr, factorColors),
+			verdictFromRatio(float64(w.CPURequest), float64(w.CPUActual), metricsAvail),
 			cv(kube.FormatMem(w.MemRequest)),
 			memActualCell,
+			verdictFromRatio(w.MemRequest, w.MemActual, metricsAvail),
 		})
 	}
 
@@ -318,15 +335,16 @@ func RenderPods(result *kube.FetchPodsResult, contextName string, includeSystem 
 	}
 
 	title := fmt.Sprintf("Top Pods — %s", contextName)
-	headers := []string{"#", "Namespace", "Pod", "Node", "CPU Req", "CPU Actual", "Over-req", "Mem Req", "Mem Actual"}
+	headers := []string{"#", "Namespace", "Pod", "Node", "CPU Req", "CPU Actual", "Over-req", "CPU Verdict", "Mem Req", "Mem Actual", "Mem Verdict"}
 
 	var rows [][]cellValue
 	for i, pod := range pods {
 		factorStr := kube.FormatFactor(pod.CPURequest, pod.CPUActual)
 		factorColors := analysis.FactorColors(pod.CPURequest, pod.CPUActual)
 
+		metricsAvail := result.MetricsAvailable && pod.MetricsAvailable
 		var cpuActualCell, memActualCell cellValue
-		if result.MetricsAvailable && pod.MetricsAvailable {
+		if metricsAvail {
 			cpuActualCell = cv(kube.FormatCPU(pod.CPUActual))
 			memActualCell = cv(kube.FormatMem(pod.MemActual))
 		} else {
@@ -342,8 +360,10 @@ func RenderPods(result *kube.FetchPodsResult, contextName string, includeSystem 
 			cv(kube.FormatCPU(pod.CPURequest)),
 			cpuActualCell,
 			cvColored(factorStr, factorColors),
+			verdictFromRatio(float64(pod.CPURequest), float64(pod.CPUActual), metricsAvail),
 			cv(kube.FormatMem(pod.MemRequest)),
 			memActualCell,
+			verdictFromRatio(pod.MemRequest, pod.MemActual, metricsAvail),
 		})
 	}
 
