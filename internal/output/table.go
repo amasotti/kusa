@@ -225,6 +225,72 @@ func renderNodesPodOverview(result *kube.FetchNodesResult, contextName string, i
 	return allMd
 }
 
+// RenderDeployments renders workloads grouped by controller to stdout and saves a markdown file.
+// Results are sorted by CPU over-request factor descending (worst first).
+func RenderDeployments(result *kube.FetchWorkloadsResult, contextName string, limit int) {
+	ts := time.Now()
+
+	workloads := make([]kube.WorkloadInfo, len(result.Workloads))
+	copy(workloads, result.Workloads)
+
+	sort.Slice(workloads, func(i, j int) bool {
+		return workloadSortFactor(workloads[i]) > workloadSortFactor(workloads[j])
+	})
+	if limit > 0 && len(workloads) > limit {
+		workloads = workloads[:limit]
+	}
+
+	title := fmt.Sprintf("Deployments — %s", contextName)
+	headers := []string{"#", "Kind", "Namespace", "Workload", "Pods", "CPU Req", "CPU Actual", "Over-req", "Mem Req", "Mem Actual"}
+
+	var rows [][]cellValue
+	for i, w := range workloads {
+		factorStr := kube.FormatFactor(w.CPURequest, w.CPUActual)
+		factorColors := analysis.FactorColors(w.CPURequest, w.CPUActual)
+
+		var cpuActualCell, memActualCell cellValue
+		if result.MetricsAvailable && w.MetricsAvailable {
+			cpuActualCell = cv(kube.FormatCPU(w.CPUActual))
+			memActualCell = cv(kube.FormatMem(w.MemActual))
+		} else {
+			cpuActualCell = naCell()
+			memActualCell = naCell()
+		}
+
+		rows = append(rows, []cellValue{
+			cv(fmt.Sprintf("%d", i+1)),
+			cv(w.Kind),
+			cv(w.Namespace),
+			cv(w.Name),
+			cv(fmt.Sprintf("%d", w.PodCount)),
+			cv(kube.FormatCPU(w.CPURequest)),
+			cpuActualCell,
+			cvColored(factorStr, factorColors),
+			cv(kube.FormatMem(w.MemRequest)),
+			memActualCell,
+		})
+	}
+
+	fmt.Println()
+	mdContent := renderTable(title, headers, rows)
+	saveMarkdownFile("deployments", contextName, ts, mdContent)
+}
+
+// workloadSortFactor returns a float64 key for sorting workloads by CPU over-request severity.
+// Higher = worse. Unknowns and no-request workloads sort to the bottom.
+func workloadSortFactor(w kube.WorkloadInfo) float64 {
+	if w.CPURequest == 0 {
+		return -1 // no requests set → least interesting
+	}
+	if !w.MetricsAvailable {
+		return -0.5 // can't compare without metrics
+	}
+	if w.CPUActual == 0 {
+		return 1e15 // requesting but consuming nothing → worst case
+	}
+	return float64(w.CPURequest) / float64(w.CPUActual)
+}
+
 // RenderPods renders the pods table to stdout and saves a markdown file.
 func RenderPods(result *kube.FetchPodsResult, contextName string, includeSystem bool, limit int) {
 	ts := time.Now()
