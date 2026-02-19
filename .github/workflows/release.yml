@@ -10,9 +10,25 @@ jobs:
     name: Verify
     uses: ./.github/workflows/test-lint.yml
 
+  generate-notes:
+    name: Generate Release Notes
+    runs-on: ubuntu-latest
+    outputs:
+      content: ${{ steps.git-cliff.outputs.content }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Generate release notes with git-cliff
+        id: git-cliff
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --latest --strip all
+
   release:
     name: Release
-    needs: verify
+    needs: [verify, generate-notes]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -51,6 +67,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')
       with:
+        body: ${{ needs.generate-notes.outputs.content }}
         files: |
           dist/*.tar.gz
           dist/*.zip
