@@ -41,7 +41,9 @@ type ownerKey struct {
 
 // FetchWorkloads fetches pods, pod metrics, and ReplicaSets concurrently, then
 // aggregates pod resource data grouped by the owning workload controller.
-func FetchWorkloads(ctx context.Context, clients *Clients, includeSystem bool) (*FetchWorkloadsResult, error) {
+// When namespace is non-empty only that namespace is queried; pass "" for cluster-wide.
+// When namespace is non-empty the system-namespace filter is skipped automatically.
+func FetchWorkloads(ctx context.Context, clients *Clients, namespace string, includeSystem bool) (*FetchWorkloadsResult, error) {
 	var (
 		pods         *corev1.PodList
 		podMetrics   *metricsv1beta1.PodMetricsList
@@ -53,7 +55,7 @@ func FetchWorkloads(ctx context.Context, clients *Clients, includeSystem bool) (
 
 	g.Go(func() error {
 		var err error
-		pods, err = clients.Core.CoreV1().Pods("").List(gctx, metav1.ListOptions{})
+		pods, err = clients.Core.CoreV1().Pods(namespace).List(gctx, metav1.ListOptions{})
 		if err != nil {
 			return fmt.Errorf("failed to list pods: %w", err)
 		}
@@ -62,7 +64,7 @@ func FetchWorkloads(ctx context.Context, clients *Clients, includeSystem bool) (
 
 	g.Go(func() error {
 		var err error
-		podMetrics, err = clients.Metrics.MetricsV1beta1().PodMetricses("").List(gctx, metav1.ListOptions{})
+		podMetrics, err = clients.Metrics.MetricsV1beta1().PodMetricses(namespace).List(gctx, metav1.ListOptions{})
 		if err != nil {
 			fmt.Printf("Warning: failed to get pod metrics (metrics-server may not be installed): %v\n", err)
 			metricsAvail = false
@@ -72,7 +74,7 @@ func FetchWorkloads(ctx context.Context, clients *Clients, includeSystem bool) (
 
 	g.Go(func() error {
 		var err error
-		replicaSets, err = clients.Core.AppsV1().ReplicaSets("").List(gctx, metav1.ListOptions{})
+		replicaSets, err = clients.Core.AppsV1().ReplicaSets(namespace).List(gctx, metav1.ListOptions{})
 		if err != nil {
 			return fmt.Errorf("failed to list replicasets: %w", err)
 		}
@@ -110,7 +112,7 @@ func FetchWorkloads(ctx context.Context, clients *Clients, includeSystem bool) (
 		if pod.Status.Phase != corev1.PodRunning {
 			continue
 		}
-		if !includeSystem && SystemNamespaces[pod.Namespace] {
+		if namespace == "" && !includeSystem && SystemNamespaces[pod.Namespace] {
 			continue
 		}
 

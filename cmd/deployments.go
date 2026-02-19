@@ -11,6 +11,7 @@ import (
 var (
 	deploymentsLimit         int
 	deploymentsIncludeSystem bool
+	deploymentsNamespace     string
 )
 
 var deploymentsCmd = &cobra.Command{
@@ -24,7 +25,7 @@ capacity offenders appear first.
 Pods owned by a ReplicaSet are resolved up to their parent Deployment.
 Standalone pods (no owner) are listed individually under kind "Pod".`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		result, err := kube.FetchWorkloads(context.Background(), clients, deploymentsIncludeSystem)
+		result, err := kube.FetchWorkloads(context.Background(), clients, deploymentsNamespace, deploymentsIncludeSystem)
 		if err != nil {
 			return err
 		}
@@ -36,5 +37,6 @@ Standalone pods (no owner) are listed individually under kind "Pod".`,
 func init() {
 	deploymentsCmd.Flags().IntVarP(&deploymentsLimit, "limit", "n", 25, "number of top workloads to show (0 = all)")
 	deploymentsCmd.Flags().BoolVar(&deploymentsIncludeSystem, "include-system", false, "include system namespaces (kube-system etc.)")
+	deploymentsCmd.Flags().StringVar(&deploymentsNamespace, "namespace", "", "filter by namespace (default: all namespaces)")
 	rootCmd.AddCommand(deploymentsCmd)
 }

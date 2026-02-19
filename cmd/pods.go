@@ -11,6 +11,7 @@ import (
 var (
 	podsLimit         int
 	podsIncludeSystem bool
+	podsNamespace     string
 )
 
 var podsCmd = &cobra.Command{
@@ -20,11 +21,13 @@ var podsCmd = &cobra.Command{
 actual usage from metrics-server. Highlights pods with the highest
 over-request factor (CPU requested / CPU actual).`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		result, err := kube.FetchPods(context.Background(), clients)
+		result, err := kube.FetchPods(context.Background(), clients, podsNamespace)
 		if err != nil {
 			return err
 		}
-		output.RenderPods(result, clients.ContextName, podsIncludeSystem, podsLimit)
+		// When scoped to a specific namespace, honour its pods regardless of system status.
+		includeSystem := podsIncludeSystem || podsNamespace != ""
+		output.RenderPods(result, clients.ContextName, includeSystem, podsLimit)
 		return nil
 	},
 }
@@ -32,5 +35,6 @@ over-request factor (CPU requested / CPU actual).`,
 func init() {
 	podsCmd.Flags().IntVarP(&podsLimit, "limit", "n", 25, "number of top pods to show")
 	podsCmd.Flags().BoolVar(&podsIncludeSystem, "include-system", false, "include system namespaces (kube-system etc.)")
+	podsCmd.Flags().StringVar(&podsNamespace, "namespace", "", "filter by namespace (default: all namespaces)")
 	rootCmd.AddCommand(podsCmd)
 }

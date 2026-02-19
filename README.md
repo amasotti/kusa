@@ -50,10 +50,11 @@ kusa [--kubeconfig <path>] [--context <name>] <command> [flags]
 
 ### Global Flags
 
-| Flag           | Default          | Description               |
-|----------------|------------------|---------------------------|
-| `--kubeconfig` | `~/.kube/config` | Path to kubeconfig file   |
-| `--context`    | current context  | Kubernetes context to use |
+| Flag           | Default          | Description                                              |
+|----------------|------------------|----------------------------------------------------------|
+| `--kubeconfig` | `~/.kube/config` | Path to kubeconfig file                                  |
+| `--context`    | current context  | Kubernetes context to use                                |
+| `--no-color`   | false            | Disable ANSI colors (also honoured via `NO_COLOR` env)   |
 
 ---
 
@@ -85,15 +86,43 @@ Lists the top N pods by CPU request, cross-referenced with actual usage.
 ```bash
 kusa pods
 kusa pods -n 50
+kusa pods --namespace my-app
 kusa pods --include-system
 ```
 
-| Flag               | Default | Description                |
-|--------------------|---------|----------------------------|
-| `-n`, `--limit`    | 25      | Number of top pods to show |
-| `--include-system` | false   | Include system namespaces  |
+| Flag               | Default        | Description                                          |
+|--------------------|----------------|------------------------------------------------------|
+| `-n`, `--limit`    | 25             | Number of top pods to show                           |
+| `--namespace`      | all namespaces | Filter to a single namespace                         |
+| `--include-system` | false          | Include system namespaces (kube-system etc.)         |
 
 Markdown files are saved to `output/<context>/pods_<timestamp>.md`.
+
+---
+
+### `kusa deployments`
+
+Groups running pods by their owning controller (Deployment, StatefulSet, DaemonSet) and shows
+aggregated CPU/memory request vs actual per workload. Sorted by CPU over-request factor
+descending, so the biggest offenders appear first.
+
+Pods owned by a ReplicaSet are resolved up to their parent Deployment.
+Standalone pods are listed individually under kind `Pod`.
+
+```bash
+kusa deployments
+kusa deployments -n 10
+kusa deployments --namespace my-app
+kusa deployments --include-system
+```
+
+| Flag               | Default        | Description                                          |
+|--------------------|----------------|------------------------------------------------------|
+| `-n`, `--limit`    | 25             | Number of top workloads to show (0 = all)            |
+| `--namespace`      | all namespaces | Filter to a single namespace                         |
+| `--include-system` | false          | Include system namespaces (kube-system etc.)         |
+
+Markdown files are saved to `output/<context>/deployments_<timestamp>.md`.
 
 ---
 

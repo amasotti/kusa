@@ -243,8 +243,9 @@ type FetchPodsResult struct {
 	MetricsAvailable bool
 }
 
-// FetchPods fetches all running pods and their metrics concurrently.
-func FetchPods(ctx context.Context, clients *Clients) (*FetchPodsResult, error) {
+// FetchPods fetches running pods and their metrics concurrently.
+// When namespace is non-empty only that namespace is queried; pass "" for cluster-wide.
+func FetchPods(ctx context.Context, clients *Clients, namespace string) (*FetchPodsResult, error) {
 	var (
 		pods         *corev1.PodList
 		podMetrics   *metricsv1beta1.PodMetricsList
@@ -255,7 +256,7 @@ func FetchPods(ctx context.Context, clients *Clients) (*FetchPodsResult, error) 
 
 	g.Go(func() error {
 		var err error
-		pods, err = clients.Core.CoreV1().Pods("").List(gctx, metav1.ListOptions{})
+		pods, err = clients.Core.CoreV1().Pods(namespace).List(gctx, metav1.ListOptions{})
 		if err != nil {
 			return fmt.Errorf("failed to list pods: %w", err)
 		}
@@ -264,7 +265,7 @@ func FetchPods(ctx context.Context, clients *Clients) (*FetchPodsResult, error) 
 
 	g.Go(func() error {
 		var err error
-		podMetrics, err = clients.Metrics.MetricsV1beta1().PodMetricses("").List(gctx, metav1.ListOptions{})
+		podMetrics, err = clients.Metrics.MetricsV1beta1().PodMetricses(namespace).List(gctx, metav1.ListOptions{})
 		if err != nil {
 			fmt.Printf("Warning: failed to get pod metrics (metrics-server may not be installed): %v\n", err)
 			metricsAvail = false
