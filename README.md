@@ -15,6 +15,8 @@ At its core is just a tiny cli that uses the golang client-go library to fetch a
 Similar result can be achieved with `kubectl` and `jq` (see [this guide](./kubectl_cmd_overview.md)), but `kusa`
 provides a more user-friendly interface, better formatting, and saves results as markdown files for easy sharing.
 
+
+![example for node overview](./node_output.png)
 ---
 
 ## Installation
