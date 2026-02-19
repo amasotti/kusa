@@ -53,7 +53,7 @@ jobs:
           BINARY_NAME=kusa.exe
         fi
         mkdir -p dist
-        go build -o dist/${BINARY_NAME} cmd/kusa/main.go
+        go build -o dist/${BINARY_NAME}
         
         # Package the binary
         cd dist
