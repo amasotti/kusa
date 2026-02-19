@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/amasotti/kusa/internal/kube"
 	"github.com/spf13/cobra"
-	"kusa/internal/kube"
 )
 
 var (

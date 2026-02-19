@@ -2,7 +2,7 @@
 
 [![Go Version](https://img.shields.io/badge/go-1.26+-00ADD8?logo=go)](https://go.dev/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/tonimasotti/kusa)](https://github.com/tonimasotti/kusa/releases)
+[![GitHub release](https://img.shields.io/github/v/release/amasotti/kusa)](https://github.com/amasotti/kusa/releases)
 
 `kusa` surfaces the gap between **actual resource usage** (CPU/memory consumption) and **requested/allocated resources**
 (what the Kubernetes scheduler has reserved).

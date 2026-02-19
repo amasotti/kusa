@@ -1,6 +1,6 @@
 package main
 
-import "kusa/cmd"
+import "github.com/amasotti/kusa/cmd"
 
 func main() {
 	cmd.Execute()

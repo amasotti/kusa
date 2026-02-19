@@ -1,4 +1,4 @@
-module kusa
+module github.com/amasotti/kusa
 
 go 1.26
 

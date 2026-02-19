@@ -3,9 +3,9 @@ package cmd
 import (
 	"context"
 
+	"github.com/amasotti/kusa/internal/kube"
+	"github.com/amasotti/kusa/internal/output"
 	"github.com/spf13/cobra"
-	"kusa/internal/kube"
-	"kusa/internal/output"
 )
 
 var (
