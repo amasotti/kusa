@@ -83,6 +83,29 @@ func naCell() cellValue {
 	return cvColored("N/A", text.Colors{text.Faint})
 }
 
+// meetsFactorFilter reports whether a req/actual pair satisfies a --min-factor threshold.
+//
+//	threshold == 0 → always true (filter disabled)
+//	threshold  > 0 → req/actual >= threshold  (over-requested by at least that factor)
+//	threshold  < 0 → actual > req             (bursting; any negative value)
+//
+// Returns false when req is 0 or metrics are unavailable.
+func meetsFactorFilter(req, actual int64, metricsAvail bool, threshold int) bool {
+	if threshold == 0 {
+		return true
+	}
+	if req == 0 || !metricsAvail {
+		return false
+	}
+	if threshold < 0 {
+		return actual > req
+	}
+	if actual == 0 {
+		return true // requesting but consuming nothing → infinite factor
+	}
+	return req/actual >= int64(threshold)
+}
+
 // verdictFromRatio computes a verdict by treating req as 100% and expressing actual as
 // a percentage of it. This makes ResourceVerdict reusable for pods and workloads where
 // there is no node-level allocatable capacity to normalise against.
@@ -241,11 +264,22 @@ func renderNodesPodOverview(result *kube.FetchNodesResult, contextName string, i
 
 // RenderDeployments renders workloads grouped by controller to stdout and saves a markdown file.
 // Results are sorted by CPU over-request factor descending (worst first).
-func RenderDeployments(result *kube.FetchWorkloadsResult, contextName string, limit int) {
+func RenderDeployments(result *kube.FetchWorkloadsResult, contextName string, limit int, minFactor int) {
 	ts := time.Now()
 
 	workloads := make([]kube.WorkloadInfo, len(result.Workloads))
 	copy(workloads, result.Workloads)
+
+	// Filter by over-request factor
+	if minFactor != 0 {
+		filtered := workloads[:0]
+		for _, w := range workloads {
+			if meetsFactorFilter(w.CPURequest, w.CPUActual, result.MetricsAvailable && w.MetricsAvailable, minFactor) {
+				filtered = append(filtered, w)
+			}
+		}
+		workloads = filtered
+	}
 
 	sort.Slice(workloads, func(i, j int) bool {
 		return workloadSortFactor(workloads[i]) > workloadSortFactor(workloads[j])
@@ -309,7 +343,7 @@ func workloadSortFactor(w kube.WorkloadInfo) float64 {
 }
 
 // RenderPods renders the pods table to stdout and saves a markdown file.
-func RenderPods(result *kube.FetchPodsResult, contextName string, includeSystem bool, limit int) {
+func RenderPods(result *kube.FetchPodsResult, contextName string, includeSystem bool, limit int, minFactor int) {
 	ts := time.Now()
 
 	// Filter system namespaces
@@ -318,6 +352,17 @@ func RenderPods(result *kube.FetchPodsResult, contextName string, includeSystem 
 		filtered := pods[:0]
 		for _, p := range pods {
 			if !kube.SystemNamespaces[p.Namespace] {
+				filtered = append(filtered, p)
+			}
+		}
+		pods = filtered
+	}
+
+	// Filter by over-request factor
+	if minFactor != 0 {
+		filtered := pods[:0]
+		for _, p := range pods {
+			if meetsFactorFilter(p.CPURequest, p.CPUActual, result.MetricsAvailable && p.MetricsAvailable, minFactor) {
 				filtered = append(filtered, p)
 			}
 		}

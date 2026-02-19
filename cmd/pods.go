@@ -12,6 +12,7 @@ var (
 	podsLimit         int
 	podsIncludeSystem bool
 	podsNamespace     string
+	podsMinFactor     int
 )
 
 var podsCmd = &cobra.Command{
@@ -27,7 +28,7 @@ over-request factor (CPU requested / CPU actual).`,
 		}
 		// When scoped to a specific namespace, honour its pods regardless of system status.
 		includeSystem := podsIncludeSystem || podsNamespace != ""
-		output.RenderPods(result, clients.ContextName, includeSystem, podsLimit)
+		output.RenderPods(result, clients.ContextName, includeSystem, podsLimit, podsMinFactor)
 		return nil
 	},
 }
@@ -36,5 +37,6 @@ func init() {
 	podsCmd.Flags().IntVarP(&podsLimit, "limit", "n", 25, "number of top pods to show")
 	podsCmd.Flags().BoolVar(&podsIncludeSystem, "include-system", false, "include system namespaces (kube-system etc.)")
 	podsCmd.Flags().StringVar(&podsNamespace, "namespace", "", "filter by namespace (default: all namespaces)")
+	podsCmd.Flags().IntVar(&podsMinFactor, "min-factor", 0, "only show pods where CPU req/actual >= N; negative N shows bursting pods (actual > req); 0 disables filter")
 	rootCmd.AddCommand(podsCmd)
 }

@@ -12,6 +12,7 @@ var (
 	deploymentsLimit         int
 	deploymentsIncludeSystem bool
 	deploymentsNamespace     string
+	deploymentsMinFactor     int
 )
 
 var deploymentsCmd = &cobra.Command{
@@ -29,7 +30,7 @@ Standalone pods (no owner) are listed individually under kind "Pod".`,
 		if err != nil {
 			return err
 		}
-		output.RenderDeployments(result, clients.ContextName, deploymentsLimit)
+		output.RenderDeployments(result, clients.ContextName, deploymentsLimit, deploymentsMinFactor)
 		return nil
 	},
 }
@@ -38,5 +39,6 @@ func init() {
 	deploymentsCmd.Flags().IntVarP(&deploymentsLimit, "limit", "n", 25, "number of top workloads to show (0 = all)")
 	deploymentsCmd.Flags().BoolVar(&deploymentsIncludeSystem, "include-system", false, "include system namespaces (kube-system etc.)")
 	deploymentsCmd.Flags().StringVar(&deploymentsNamespace, "namespace", "", "filter by namespace (default: all namespaces)")
+	deploymentsCmd.Flags().IntVar(&deploymentsMinFactor, "min-factor", 0, "only show workloads where CPU req/actual >= N; negative N shows bursting workloads (actual > req); 0 disables filter")
 	rootCmd.AddCommand(deploymentsCmd)
 }
